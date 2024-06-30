@@ -21,10 +21,8 @@ public class GeneratePlotAR : MonoBehaviour
     [Header("Weave Plot Dimensions")]
     [SerializeField] private GameObject weavePlot;
     [SerializeField] private GameObject weavePointer;
-    [SerializeField] private float minX;
-    [SerializeField] private float maxX;
-    [SerializeField] private float minY;
-    [SerializeField] private float maxY;
+
+    private bool build;
 
     private MeshCollider mc;
     private List<GameObject> gridPoints = new List<GameObject>();
@@ -104,7 +102,15 @@ public class GeneratePlotAR : MonoBehaviour
     //Do Something when plot is touched
     private void StartTouch()
     {
-        Ray rayFromTouchPos = Camera.main.ScreenPointToRay(Input.GetTouch(0).position/*Input.mousePosition*/);
+        Ray rayFromTouchPos;
+        if (!build)
+        {
+            rayFromTouchPos = Camera.main.ScreenPointToRay(Input.mousePosition);
+        }
+        else
+        {
+            rayFromTouchPos = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+        }
         ray = rayFromTouchPos;
         if (Physics.Raycast(rayFromTouchPos, out var raycastHit, 100f))
         {
@@ -159,10 +165,15 @@ public class GeneratePlotAR : MonoBehaviour
         pointerText.transform.parent.LookAt(Camera.main.transform.position);
         UpdateMesh(plotWeaveMesh, weaveVertices, weaveTriangles, weaveUvs);
         UpdateMesh(plotMesh, vertices, triangles, uvs);
-        if(/*Input.GetMouseButton(0)*/Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
+        if(Input.GetMouseButton(0))
         {
-            StartTouch();
+            build = false;
         }
+        else if(Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
+        {
+            build = true;
+        }
+        StartTouch();
     }
 
     private void OnDrawGizmos()
