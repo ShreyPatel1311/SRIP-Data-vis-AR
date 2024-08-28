@@ -103,7 +103,7 @@ public class GeneratePlotAR : MonoBehaviour
     private void StartTouch()
     {
         Ray rayFromTouchPos;
-        if (!build)
+        if (!build && Input.GetMouseButton(0))
         {
             rayFromTouchPos = Camera.main.ScreenPointToRay(Input.mousePosition);
         }
@@ -121,12 +121,11 @@ public class GeneratePlotAR : MonoBehaviour
                 if (Vector3.Distance(point.transform.position, weavePointer.transform.position) <= thresholdDistance)
                 {
                     vertices[i].y = U(vertices[i].x, vertices[i].z);
-                    pointer.transform.localPosition = startPointerPosition + vertices[i];
+                    pointer.transform.localPosition = startPointerPosition + vertices[i] + new Vector3(-0.65f, -0.65f, 0);
                     GameObject sphere = gridPoint;
                     sphere.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-                    Instantiate(sphere, pointer.transform.position, Quaternion.identity, gameObject.transform);
+                    Instantiate(sphere, pointer.transform.position + new Vector3(-0.65f, -0.65f, 0), Quaternion.identity, gameObject.transform);
                     pointerText.text = U(vertices[i].x, vertices[i].z).ToString();
-                    Debug.Log(i);
                 }
                 i++;
             }
@@ -180,5 +179,10 @@ public class GeneratePlotAR : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawRay(ray.origin, ray.direction.normalized * 100f);
+    }
+
+    public void QuitButton()
+    {
+        Application.Quit();
     }
 }
